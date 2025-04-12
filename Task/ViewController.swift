@@ -30,9 +30,19 @@ class ViewController: UIViewController {
     
     func extractTitle(from input: String) -> String {
         
-        let keywords = ["today", "tomorrow", "at", "in", "next", "am", "pm", "next week", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "january", "february", "march", "april", "may", "june", "july", "august", "september", "november", "december"]
+        let keywords = ["today", "tomorrow", "at", "in", "next", "am", "pm", "week", "next", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "january", "february", "march", "april", "may", "june", "july", "august", "september", "november", "december"]
         
-        let words = input.lowercased().split(separator: " ").filter {}
+        let months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "november", "december"]
+        
+        let inputToLower = input.lowercased()
+        
+        let timeRegex = try! NSRegularExpression(
+            pattern: #"(\d{1,2}(:\d{2})?\s*[ap]m|\d{1,2}:\d{2})"#, options: [.caseInsensitive]
+        )
+        
+        let inputNoTime = timeRegex.stringByReplacingMatches(in: inputToLower, options: [], range: NSRange(location: 0, length: inputToLower.utf16.count), withTemplate: "")
+        
+        
     }
 
 }
