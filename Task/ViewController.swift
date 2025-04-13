@@ -287,11 +287,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Combine into final date string
         let cleanedTime = timeString.replacingOccurrences(of: " ", with: "")
         let dateText = timeString.isEmpty ? potentialDate : "\(potentialDate) \(cleanedTime)"
-        print("date string to parse: '\(dateText)'")
 
-        let dateFormats = [
-            "MMMM d h:mma", "MMMM d 'at' h:mma",
-            "MMMM d", "d MMMM h:mma", "d MMMM"
+        let dateFormats = [ "MMMM d ha", "MMMM d h:mma", "MMMM d 'at' h:mma", "MMMM d", "d MMMM h:mma", "d MMMM"
         ]
 
         let formatter = DateFormatter()
@@ -300,7 +297,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         for format in dateFormats {
             formatter.dateFormat = format
-            if let date = formatter.date(from: dateText) {
+            let trimmedDate = dateText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if var date = formatter.date(from: trimmedDate) {
                 return date
             }
         }
