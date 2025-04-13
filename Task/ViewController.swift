@@ -299,6 +299,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             formatter.dateFormat = format
             let trimmedDate = dateText.trimmingCharacters(in: .whitespacesAndNewlines)
             if var date = formatter.date(from: trimmedDate) {
+                var dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+                if dateComponents.year == 2000 {
+                    dateComponents.year = Calendar.current.component(.year, from: Date())
+                    if let updatedDate = Calendar.current.date(from: dateComponents) {
+                    date = updatedDate
+                    }
+                }
                 return date
             }
         }
