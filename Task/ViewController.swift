@@ -260,18 +260,23 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
 
         // Date extraction
-        if let dateText = findDate(from: input.capitalized) {
-            let dateFormats = [ "MMMM d h:mma", "d MMMM h:mma", "MMMM d 'at' h:mma", "d MMMM 'at' h:mma", "MMMM d", "d MMMM"]
+        var dateText = findDate(from: input.capitalized) ?? ""
+        
+        if let timeMatch = timeRegex.firstMatch(in: input, options: [], range: NSRange(input.startIndex..., in: input)) {
+            let matchString = String(input[Range(timeMatch.range, in: input)!])
+            dateText += "\(matchString)"
+        }
+        
+        let dateFormats = [ "MMMM d h:mma", "d MMMM h:mma", "MMMM d 'at' h:mma", "d MMMM 'at' h:mma", "MMMM d", "d MMMM"]
 
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "en_US_POSIX")
-            formatter.timeZone = TimeZone.current
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone.current
 
-            for format in dateFormats {
-                formatter.dateFormat = format
-                if let date = formatter.date(from: dateText) {
-                    return date
-                }
+        for format in dateFormats {
+            formatter.dateFormat = format
+            if let date = formatter.date(from: dateText) {
+                return date
             }
         }
 
