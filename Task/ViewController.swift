@@ -9,9 +9,11 @@ import UIKit
 import CoreData
 import Foundation
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var taskTextField: UITextField!
+    
+    @IBOutlet weak var taskTableView: UITableView!
     
     var tasks: [Tasks]?
     
@@ -19,7 +21,9 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        taskTableView.delegate.self
+        taskTableView.dataSource.self
+        fetchTasks()
     }
     
     @IBAction func addTask(_ sender: UITextField) {
@@ -27,8 +31,77 @@ class ViewController: UIViewController {
 
         let title = extractTitle(from: input)
         let dueDate = extractDueDate(from: input)
+        let id = UUID()
+        
+        guard let context = (appDelegate as? AppDelegate)?.persistentContainer.viewContext else { return }
+        
+        let newTask = Tasks(context: context)
+        newTask.taskTitle = title
+        newTask.date = dueDate
+        newTask.id = id
+        
+        do {
+            try context.save()
+            fetchTasks()
+        } catch {
+            print("Failed to save Task")
+        }
 
         sender.text = ""
+    }
+    
+    func fetchTasks() {
+        guard let context = (appDelegate as? AppDelegate)?.persistentContainer.viewContext
+        else { return }
+        
+        let fetchRequest: NSFetchRequest<Tasks> = Tasks.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        
+        do {
+            tasks = try context.fetch(fetchRequest)
+            taskTableView.reloadData()
+        } catch {
+            print("Failed to fetch Tasks")
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return tasks?.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = taskTableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath)
+        
+        if let task = tasks?[indexPath.row] {
+            
+            cell.textLabel?.text = task.taskTitle ?? "Untitled Task"
+            
+            if let dueDate = task.date {
+                let formatter = DateFormatter()
+                formatter.dateStyle = .medium
+                formatter.timeStyle = .short
+                cell.detailTextLabel?.text = formatter.string(from: dueDate)
+            } else {
+                cell.detailTextLabel?.text = "No due date"
+            }
+        }
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            guard let context = (appDelegate as? AppDelegate)?.persistentContainer.viewContext
+            else { return }
+            if let taskToDelete = tasks?[indexPath.row] {
+                context.delete(taskToDelete)
+                do {
+                    try context.save()
+                    fetchTasks()
+                } catch {
+                    print("Error Removing Task")
+                }
+            }
+        }
     }
     
     func extractTitle(from input: String) -> String {
