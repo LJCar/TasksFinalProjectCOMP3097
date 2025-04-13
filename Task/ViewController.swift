@@ -24,6 +24,8 @@ class ViewController: UIViewController {
     
     @IBAction func addTask(_ sender: UITextField) {
         guard let input = sender.text, !input.isEmpty else { return }
+
+        let title = extractTitle(from: input)
         
         
     }
@@ -42,8 +44,27 @@ class ViewController: UIViewController {
         
         let inputNoTime = timeRegex.stringByReplacingMatches(in: inputToLower, options: [], range: NSRange(location: 0, length: inputToLower.utf16.count), withTemplate: "")
         
-        
+        let words = inputNoTime.split(separator: " ")
+        var title: [String] = []
+
+        for i in 0..<words.count {
+            let word = String(words[i])
+
+            if keywords.contains(word){
+                continue
+            }
+            if i > 0, months.contains(String(words[i - 1])), Int(word) != nil {
+                continue
+            } 
+
+            title.append(word)
+        }
+        return title.joined(separator: " ").capitalized
     }
 
+    func extractDueDate(from input: String) -> Date?{
+        let input = input.lowercased()
+        let today = Date()
+    }
 }
 
