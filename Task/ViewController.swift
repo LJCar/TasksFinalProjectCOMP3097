@@ -149,7 +149,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     func findDate(from input: String) -> String? {
          let patterns = [
-            #"([a-zA-Z]+ \d{1,2} \d{1,2}(:\d{2})?\s*[ap]m)"#,        // "April 18 8am"
+            #"([a-zA-Z]+ \d{1,2}(.*?)\d{1,2}(:\d{2})?\s*[ap]m)"#,    // "April 18 8am"
             #"([a-zA-Z]+ \d{1,2} at \d{1,2}(:\d{2})?\s*[ap]m)"#,     // "April 20 at 3pm" or "May 5 at 3:30pm"
             #"(\d{1,2} [a-zA-Z]+ at \d{1,2}(:\d{2})?\s*[ap]m)"#,     // "20 April at 3pm"
             #"([a-zA-Z]+ \d{1,2})"#,                                 // "April 20"
@@ -260,11 +260,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
 
         // Date extraction
-        var dateText = findDate(from: input.capitalized) ?? ""
+        var dateText = findDate(from: input.lowercased()) ?? ""
         
         if let timeMatch = timeRegex.firstMatch(in: input, options: [], range: NSRange(input.startIndex..., in: input)) {
             let matchString = String(input[Range(timeMatch.range, in: input)!])
-            dateText += "\(matchString)"
+            dateText += " \(matchString)"
         }
         
         let dateFormats = [ "MMMM d h:mma", "d MMMM h:mma", "MMMM d 'at' h:mma", "d MMMM 'at' h:mma", "MMMM d", "d MMMM"]
