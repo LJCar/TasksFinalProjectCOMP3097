@@ -21,8 +21,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        taskTableView.delegate.self
-        taskTableView.dataSource.self
+        taskTableView.delegate = self
+        taskTableView.dataSource = self
         fetchTasks()
     }
     
@@ -138,8 +138,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     func weekdayFromInput(_ input: String) -> Int? {
         let weekdays = ["sunday": 1, "monday": 2, "tuesday": 3, "wednesday": 4, "thursday": 5, "friday": 6, "saturday": 7]
+        
         for (day, value) in weekdays {
-            if input.contains(day) {
+            if input.lowercased().contains(day) {
                 return value
             }
         }
