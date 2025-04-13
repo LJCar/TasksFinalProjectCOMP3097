@@ -285,7 +285,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
 
         // Combine into final date string
-        let dateText = timeString.isEmpty ? potentialDate : "\(potentialDate) \(timeString)"
+        let cleanedTime = timeString.replacingOccurrences(of: " ", with: "")
+        let dateText = timeString.isEmpty ? potentialDate : "\(potentialDate) \(cleanedTime)"
         print("date string to parse: '\(dateText)'")
 
         let dateFormats = [
