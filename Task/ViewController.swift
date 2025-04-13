@@ -260,14 +260,38 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
 
         // Date extraction
-        var dateText = findDate(from: input.lowercased()) ?? ""
-        
-        if let timeMatch = timeRegex.firstMatch(in: input, options: [], range: NSRange(input.startIndex..., in: input)) {
-            let matchString = String(input[Range(timeMatch.range, in: input)!])
-            dateText += " \(matchString)"
+        var potentialDate: String = ""
+        var foundMonth = false
+        let monthSet: Set<String> = ["january", "february", "march", "april", "may", "june",
+                                        "july", "august", "september", "october", "november", "december"]
+
+        for i in 0..<words.count {
+            let word = String(words[i])
+            if monthSet.contains(word), i + 1 < words.count, Int(words[i + 1]) != nil {
+                potentialDate = "\(word.capitalized) \(words[i + 1])"
+                foundMonth = true
+                break
+            }
         }
-        
-        let dateFormats = [ "MMMM d h:mma", "d MMMM h:mma", "MMMM d 'at' h:mma", "d MMMM 'at' h:mma", "MMMM d", "d MMMM"]
+
+        guard foundMonth else {
+            return calendar.date(from: components)
+        }
+
+        // Try to extract time
+        var timeString: String = ""
+        if let match = timeRegex.firstMatch(in: input, options: [], range: NSRange(input.startIndex..., in: input)) {
+            timeString = String(input[Range(match.range, in: input)!])
+        }
+
+        // Combine into final date string
+        let dateText = timeString.isEmpty ? potentialDate : "\(potentialDate) \(timeString)"
+        print("date string to parse: '\(dateText)'")
+
+        let dateFormats = [
+            "MMMM d h:mma", "MMMM d 'at' h:mma",
+            "MMMM d", "d MMMM h:mma", "d MMMM"
+        ]
 
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
