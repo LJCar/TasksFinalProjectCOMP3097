@@ -149,10 +149,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     func findDate(from input: String) -> String? {
          let patterns = [
+            #"([a-zA-Z]+ \d{1,2} \d{1,2}(:\d{2})?\s*[ap]m)"#,        // "April 18 8am"
             #"([a-zA-Z]+ \d{1,2} at \d{1,2}(:\d{2})?\s*[ap]m)"#,     // "April 20 at 3pm" or "May 5 at 3:30pm"
             #"(\d{1,2} [a-zA-Z]+ at \d{1,2}(:\d{2})?\s*[ap]m)"#,     // "20 April at 3pm"
             #"([a-zA-Z]+ \d{1,2})"#,                                 // "April 20"
-            #"(\d{1,2} [a-zA-Z]+)"#                                  // "20 April
+            #"(\d{1,2} [a-zA-Z]+)"#                                  // "20 April"
         ]
 
         for pattern in patterns {
@@ -260,7 +261,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         // Date extraction
         if let dateText = findDate(from: input.capitalized) {
-            let dateFormats = [ "MMMM d", "d MMMM", "MMMM d h:mma", "d MMMM h:mma", "MMMM d 'at' h:mma", "d MMMM 'at' h:mma"]
+            let dateFormats = [ "MMMM d h:mma", "d MMMM h:mma", "MMMM d 'at' h:mma", "d MMMM 'at' h:mma", "MMMM d", "d MMMM"]
 
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "en_US_POSIX")
